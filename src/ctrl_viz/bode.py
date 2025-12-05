@@ -57,7 +57,6 @@ def bode_plot(system, omega=None, dB=True, deg=True, Hz=False,
     
     # Convert phase to degrees if requested
     if deg:
-        phase_plot = np.rad2deg(np.angle(mag * np.exp(1j * phase)))
         phase_plot = np.rad2deg(phase)
         phase_label = "Phase (deg)"
     else:

@@ -1,4 +1,4 @@
-control
-scipy
-matplotlib
-pytest
+control>=0.9.0
+scipy>=1.9.0
+matplotlib>=3.5.0
+pytest>=7.0.0
