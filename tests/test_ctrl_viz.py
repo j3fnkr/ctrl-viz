@@ -5,7 +5,8 @@ Tests for ctrl_viz package.
 import pytest
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend for testing
+
+matplotlib.use("Agg")  # Use non-interactive backend for testing
 import matplotlib.pyplot as plt
 import control
 
@@ -162,13 +163,15 @@ class TestPackageImports:
     def test_package_version(self):
         """Test that package has version."""
         import ctrl_viz
-        assert hasattr(ctrl_viz, '__version__')
-        assert ctrl_viz.__version__ == "0.1.0"
+
+        assert hasattr(ctrl_viz, "__version__")
+        assert ctrl_viz.__version__ == "0.1.1"
 
     def test_all_exports(self):
         """Test that all expected functions are exported."""
         import ctrl_viz
-        assert hasattr(ctrl_viz, 'bode_plot')
-        assert hasattr(ctrl_viz, 'bode_magnitude')
-        assert hasattr(ctrl_viz, 'bode_phase')
-        assert hasattr(ctrl_viz, 'nyquist_plot')
+
+        assert hasattr(ctrl_viz, "bode_plot")
+        assert hasattr(ctrl_viz, "bode_magnitude")
+        assert hasattr(ctrl_viz, "bode_phase")
+        assert hasattr(ctrl_viz, "nyquist_plot")
