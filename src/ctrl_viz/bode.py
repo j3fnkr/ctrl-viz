@@ -10,8 +10,16 @@ import matplotlib.pyplot as plt
 import control
 
 
-def bode_plot(system, omega=None, dB=True, deg=True, Hz=False, 
-              title=None, figsize=(10, 8), grid=True):
+def bode_plot(
+    system,
+    omega=None,
+    dB=True,
+    deg=True,
+    Hz=False,
+    title=None,
+    figsize=(10, 8),
+    grid=True,
+):
     """
     Create a Bode plot (magnitude and phase) for a given transfer function.
 
@@ -43,10 +51,13 @@ def bode_plot(system, omega=None, dB=True, deg=True, Hz=False,
     """
     if omega is None:
         omega = np.logspace(-2, 2, 500)
-    
+
     # Compute frequency response
     mag, phase, omega_out = control.frequency_response(system, omega)
-    
+
+    # Unwrap phase (values outside [-pi, pi] possible)
+    phase_unwrapped = np.unwrap(phase)
+
     # Convert magnitude to dB if requested
     if dB:
         mag_plot = 20 * np.log10(np.abs(mag))
@@ -54,15 +65,15 @@ def bode_plot(system, omega=None, dB=True, deg=True, Hz=False,
     else:
         mag_plot = np.abs(mag)
         mag_label = "Magnitude"
-    
+
     # Convert phase to degrees if requested
     if deg:
-        phase_plot = np.rad2deg(phase)
+        phase_plot = np.rad2deg(phase_unwrapped)
         phase_label = "Phase (deg)"
     else:
-        phase_plot = phase
+        phase_plot = phase_unwrapped
         phase_label = "Phase (rad)"
-    
+
     # Convert frequency to Hz if requested
     if Hz:
         freq_plot = omega_out / (2 * np.pi)
@@ -70,31 +81,32 @@ def bode_plot(system, omega=None, dB=True, deg=True, Hz=False,
     else:
         freq_plot = omega_out
         freq_label = "Frequency (rad/s)"
-    
+
     # Create figure with two subplots
     fig, (mag_ax, phase_ax) = plt.subplots(2, 1, figsize=figsize, sharex=True)
-    
+
     # Plot magnitude
     mag_ax.semilogx(freq_plot, mag_plot.flatten())
     mag_ax.set_ylabel(mag_label)
     mag_ax.set_title(title or "Bode Plot")
     if grid:
         mag_ax.grid(True, which="both", linestyle="-", alpha=0.7)
-    
+
     # Plot phase
     phase_ax.semilogx(freq_plot, phase_plot.flatten())
     phase_ax.set_xlabel(freq_label)
     phase_ax.set_ylabel(phase_label)
     if grid:
         phase_ax.grid(True, which="both", linestyle="-", alpha=0.7)
-    
+
     plt.tight_layout()
-    
+
     return fig, (mag_ax, phase_ax)
 
 
-def bode_magnitude(system, omega=None, dB=True, Hz=False,
-                   title=None, figsize=(10, 4), grid=True):
+def bode_magnitude(
+    system, omega=None, dB=True, Hz=False, title=None, figsize=(10, 4), grid=True
+):
     """
     Create a Bode magnitude plot for a given transfer function.
 
@@ -124,10 +136,10 @@ def bode_magnitude(system, omega=None, dB=True, Hz=False,
     """
     if omega is None:
         omega = np.logspace(-2, 2, 500)
-    
+
     # Compute frequency response
     mag, phase, omega_out = control.frequency_response(system, omega)
-    
+
     # Convert magnitude to dB if requested
     if dB:
         mag_plot = 20 * np.log10(np.abs(mag))
@@ -135,7 +147,7 @@ def bode_magnitude(system, omega=None, dB=True, Hz=False,
     else:
         mag_plot = np.abs(mag)
         mag_label = "Magnitude"
-    
+
     # Convert frequency to Hz if requested
     if Hz:
         freq_plot = omega_out / (2 * np.pi)
@@ -143,10 +155,10 @@ def bode_magnitude(system, omega=None, dB=True, Hz=False,
     else:
         freq_plot = omega_out
         freq_label = "Frequency (rad/s)"
-    
+
     # Create figure
     fig, ax = plt.subplots(figsize=figsize)
-    
+
     # Plot magnitude
     ax.semilogx(freq_plot, mag_plot.flatten())
     ax.set_xlabel(freq_label)
@@ -154,14 +166,15 @@ def bode_magnitude(system, omega=None, dB=True, Hz=False,
     ax.set_title(title or "Bode Magnitude Plot")
     if grid:
         ax.grid(True, which="both", linestyle="-", alpha=0.7)
-    
+
     plt.tight_layout()
-    
+
     return fig, ax
 
 
-def bode_phase(system, omega=None, deg=True, Hz=False,
-               title=None, figsize=(10, 4), grid=True):
+def bode_phase(
+    system, omega=None, deg=True, Hz=False, title=None, figsize=(10, 4), grid=True
+):
     """
     Create a Bode phase plot for a given transfer function.
 
@@ -191,10 +204,10 @@ def bode_phase(system, omega=None, deg=True, Hz=False,
     """
     if omega is None:
         omega = np.logspace(-2, 2, 500)
-    
+
     # Compute frequency response
     mag, phase, omega_out = control.frequency_response(system, omega)
-    
+
     # Convert phase to degrees if requested
     if deg:
         phase_plot = np.rad2deg(phase)
@@ -202,7 +215,7 @@ def bode_phase(system, omega=None, deg=True, Hz=False,
     else:
         phase_plot = phase
         phase_label = "Phase (rad)"
-    
+
     # Convert frequency to Hz if requested
     if Hz:
         freq_plot = omega_out / (2 * np.pi)
@@ -210,10 +223,10 @@ def bode_phase(system, omega=None, deg=True, Hz=False,
     else:
         freq_plot = omega_out
         freq_label = "Frequency (rad/s)"
-    
+
     # Create figure
     fig, ax = plt.subplots(figsize=figsize)
-    
+
     # Plot phase
     ax.semilogx(freq_plot, phase_plot.flatten())
     ax.set_xlabel(freq_label)
@@ -221,7 +234,7 @@ def bode_phase(system, omega=None, deg=True, Hz=False,
     ax.set_title(title or "Bode Phase Plot")
     if grid:
         ax.grid(True, which="both", linestyle="-", alpha=0.7)
-    
+
     plt.tight_layout()
-    
+
     return fig, ax
