@@ -34,6 +34,11 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+[optional] For development or when using the jupyter lab demo, install the package like this:
+```bash
+pip install -e ".[dev,lab]"
+```
+
 Or install directly:
 ```bash
 pip install -e src/
@@ -45,7 +50,7 @@ pip install -e src/
 import control
 from ctrl_viz import bode_plot, nyquist_plot
 
-# Create a transfer function
+# Create a transfer function (1 / (s^2 + 0.5 s + 1))
 system = control.TransferFunction([1], [1, 0.5, 1])
 
 # Create a Bode plot
