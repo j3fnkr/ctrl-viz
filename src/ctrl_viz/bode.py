@@ -11,28 +11,33 @@ import control
 
 
 def bode_plot(
-    system,
-    omega=None,
-    dB=True,
-    deg=True,
-    Hz=False,
-    title=None,
-    figsize=(10, 8),
-    grid=True,
+        system,
+        omega=None,
+        dB=True,
+        deg=True,
+        Hz=False,
+        title=None,
+        figsize=(10, 8),
+        grid=True,
+        labelsize=12,
+        ticksize=10,
+        freq_limits=None,
+        mag_limits=None,
+        phase_limits=None,
 ):
     """
     Create a Bode plot (magnitude and phase) for a given transfer function.
 
     Parameters
     ----------
-    system : control.TransferFunction or control.StateSpace
+    system :    control.TransferFunction or control. StateSpace
         The system to plot.
-    omega : array_like, optional
+    omega :  array_like, optional
         Frequency range in rad/s. If None, automatically determined.
     dB : bool, optional
         If True, plot magnitude in decibels. Default is True.
     deg : bool, optional
-        If True, plot phase in degrees. Default is True.
+        If True, plot phase in degrees.   Default is True.
     Hz : bool, optional
         If True, plot frequency in Hz instead of rad/s. Default is False.
     title : str, optional
@@ -41,6 +46,16 @@ def bode_plot(
         Figure size. Default is (10, 8).
     grid : bool, optional
         If True, show grid. Default is True.
+    labelsize : int, optional
+        Font size for axis labels.  Default is 12.
+    ticksize : int, optional
+        Font size for tick labels (numbers on axes). Default is 10.
+    freq_limits : tuple, optional
+        Frequency axis limits as (min, max). If None, auto-scaled.
+    mag_limits : tuple, optional
+        Magnitude axis limits as (min, max). If None, auto-scaled.
+    phase_limits : tuple, optional
+        Phase axis limits as (min, max). If None, auto-scaled.
 
     Returns
     -------
@@ -87,17 +102,31 @@ def bode_plot(
 
     # Plot magnitude
     mag_ax.semilogx(freq_plot, mag_plot.flatten())
-    mag_ax.set_ylabel(mag_label)
+    mag_ax.set_ylabel(mag_label, fontsize=labelsize)
     mag_ax.set_title(title or "Bode Plot")
+    mag_ax.tick_params(axis='both', which='major', labelsize=ticksize)
     if grid:
         mag_ax.grid(True, which="both", linestyle="-", alpha=0.7)
 
-    # Plot phase
-    phase_ax.semilogx(freq_plot, phase_plot.flatten())
-    phase_ax.set_xlabel(freq_label)
-    phase_ax.set_ylabel(phase_label)
+    # Set magnitude limits if specified
+    if mag_limits is not None:
+        mag_ax.set_ylim(mag_limits)
+
+    # Plot phase (in red)
+    phase_ax.semilogx(freq_plot, phase_plot.flatten(), color='red')
+    phase_ax.set_xlabel(freq_label, fontsize=labelsize)
+    phase_ax.set_ylabel(phase_label, fontsize=labelsize)
+    phase_ax.tick_params(axis='both', which='major', labelsize=ticksize)
     if grid:
         phase_ax.grid(True, which="both", linestyle="-", alpha=0.7)
+
+    # Set frequency limits if specified (applies to both since sharex=True)
+    if freq_limits is not None:
+        phase_ax.set_xlim(freq_limits)
+
+    # Set phase limits if specified
+    if phase_limits is not None:
+        phase_ax.set_ylim(phase_limits)
 
     plt.tight_layout()
 
