@@ -147,6 +147,19 @@ Creates a Nyquist plot.
 
 See the [examples/demo.ipynb](examples/demo.ipynb) notebook for detailed usage examples.
 
+## Web UI
+
+Run an interactive local web app to plot transfer functions without writing a Python script:
+
+```bash
+pip install -e ".[web]"
+python run_web.py
+```
+
+Then open **http://127.0.0.1:8050/** in your browser.
+
+Enter a rational expression in `s`, for example `1/(s^2+0.5*s+1)`, choose Nyquist and/or Bode plots, and click **Calculate**. The input field validates syntax in real time; invalid expressions are highlighted in red with an error hint.
+
 ## Requirements
 
 - Python 3.8+

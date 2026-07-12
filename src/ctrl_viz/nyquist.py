@@ -7,7 +7,8 @@ of transfer functions using the python-control library.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import control
+
+from ctrl_viz.frequency import compute_frequency_response
 
 
 def nyquist_plot(system, omega=None, title=None, figsize=(8, 8),
@@ -41,9 +42,10 @@ def nyquist_plot(system, omega=None, title=None, figsize=(8, 8),
     """
     if omega is None:
         omega = np.logspace(-2, 2, 1000)
-    
-    # Compute frequency response
-    mag, phase, omega_out = control.frequency_response(system, omega)
+
+    mag, phase, _omega_out = compute_frequency_response(
+        system, omega, unwrap_phase=False
+    )
     
     # Convert to complex representation
     response = mag * np.exp(1j * phase)

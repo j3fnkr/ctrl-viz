@@ -25,6 +25,11 @@ setup(
     extras_require={
         "dev": ["pytest>=7.0.0"],  # local install: pip install ".[dev,demo]"
         "demo": ["jupyterlab>=3.0.0"],
+        "web": [
+            "dash>=2.14",
+            "plotly>=5.18",
+            "dash-bootstrap-components>=1.5",
+        ],
     },
     classifiers=[
         "Programming Language :: Python :: 3",

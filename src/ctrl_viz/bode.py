@@ -7,7 +7,8 @@ of transfer functions using the python-control library.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import control
+
+from ctrl_viz.frequency import compute_frequency_response
 
 
 def bode_plot(
@@ -64,14 +65,7 @@ def bode_plot(
     axes : tuple of matplotlib.axes.Axes
         Tuple containing (mag_ax, phase_ax).
     """
-    if omega is None:
-        omega = np.logspace(-2, 2, 500)
-
-    # Compute frequency response
-    mag, phase, omega_out = control.frequency_response(system, omega)
-
-    # Unwrap phase (values outside [-pi, pi] possible)
-    phase_unwrapped = np.unwrap(phase)
+    mag, phase_unwrapped, omega_out = compute_frequency_response(system, omega)
 
     # Convert magnitude to dB if requested
     if dB:
@@ -163,11 +157,7 @@ def bode_magnitude(
     ax : matplotlib.axes.Axes
         The axes object.
     """
-    if omega is None:
-        omega = np.logspace(-2, 2, 500)
-
-    # Compute frequency response
-    mag, phase, omega_out = control.frequency_response(system, omega)
+    mag, _phase, omega_out = compute_frequency_response(system, omega)
 
     # Convert magnitude to dB if requested
     if dB:
@@ -231,11 +221,9 @@ def bode_phase(
     ax : matplotlib.axes.Axes
         The axes object.
     """
-    if omega is None:
-        omega = np.logspace(-2, 2, 500)
-
-    # Compute frequency response
-    mag, phase, omega_out = control.frequency_response(system, omega)
+    _mag, phase, omega_out = compute_frequency_response(
+        system, omega, unwrap_phase=False
+    )
 
     # Convert phase to degrees if requested
     if deg:

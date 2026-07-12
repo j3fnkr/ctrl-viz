@@ -1,0 +1,42 @@
+.app-container {
+    max-width: 960px;
+}
+
+.app-title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.syntax-hint {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.tf-input {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 1.1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tf-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(44, 130, 201, 0.25);
+}
+
+.tf-input.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.2);
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+#nyquist-container,
+#bode-container {
+    margin-bottom: 2rem;
+}
