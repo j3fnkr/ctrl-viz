@@ -12,7 +12,15 @@ from dash import Input, Output, State, dcc, html, no_update
 from ctrl_viz.parse import parse_transfer_function
 from ctrl_viz.web.plots import SOFT_DARK_TEMPLATE, build_bode_fig, build_nyquist_fig
 
-ASSETS_PATH = Path(__file__).resolve().parents[3] / "assets"
+def _assets_path() -> Path:
+    """Dash assets folder (packaged or repo root in editable dev installs)."""
+    packaged = Path(__file__).resolve().parent / "assets"
+    if packaged.is_dir():
+        return packaged
+    return Path(__file__).resolve().parents[3] / "assets"
+
+
+ASSETS_PATH = _assets_path()
 
 PLOT_CONFIG = {"scrollZoom": True}
 

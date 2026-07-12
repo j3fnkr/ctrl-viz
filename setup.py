@@ -17,6 +17,8 @@ setup(
     python_requires=">=3.8",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    package_data={"ctrl_viz": ["web/assets/*"]},
+    include_package_data=True,
     install_requires=[
         "control>=0.9.0",
         "scipy>=1.9.0",
@@ -29,6 +31,7 @@ setup(
             "dash>=2.14",
             "plotly>=5.18",
             "dash-bootstrap-components>=1.5",
+            "gunicorn>=21.0",
         ],
     },
     classifiers=[
