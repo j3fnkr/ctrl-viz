@@ -45,3 +45,33 @@ class TestParseTransferFunction:
     def test_non_transfer_function_raises(self):
         with pytest.raises(ValueError, match="must evaluate to a transfer function"):
             parse_transfer_function("1+1")
+
+    def test_implicit_mult_coefficient_s(self):
+        system = parse_transfer_function("4s")
+        expected = parse_transfer_function("4*s")
+        assert self._coeffs(system) == self._coeffs(expected)
+
+    def test_implicit_mult_nested_parens(self):
+        system = parse_transfer_function("1/(s(s+1))")
+        expected = parse_transfer_function("1/(s*(s+1))")
+        assert self._coeffs(system) == self._coeffs(expected)
+
+    def test_implicit_mult_factored_parens(self):
+        system = parse_transfer_function("(s+1)(s+2)")
+        expected = parse_transfer_function("(s+1)*(s+2)")
+        assert self._coeffs(system) == self._coeffs(expected)
+
+    def test_implicit_mult_decimal_coefficient(self):
+        system = parse_transfer_function("0.5s")
+        expected = parse_transfer_function("0.5*s")
+        assert self._coeffs(system) == self._coeffs(expected)
+
+    def test_implicit_mult_with_power(self):
+        system = parse_transfer_function("2s^2")
+        expected = parse_transfer_function("2*s^2")
+        assert self._coeffs(system) == self._coeffs(expected)
+
+    def test_explicit_mult_unchanged(self):
+        system = parse_transfer_function("2*s+1")
+        expected = control.TransferFunction([2, 1], [1])
+        assert self._coeffs(system) == self._coeffs(expected)

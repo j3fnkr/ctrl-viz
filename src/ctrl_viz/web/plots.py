@@ -8,8 +8,31 @@ from plotly.subplots import make_subplots
 
 from ctrl_viz.frequency import compute_frequency_response
 
+SOFT_DARK_TEMPLATE = go.layout.Template(
+    layout=go.Layout(
+        paper_bgcolor="#2a2a3e",
+        plot_bgcolor="#333348",
+        font=dict(color="#e0e0e0"),
+        title=dict(x=0, xanchor="left"),
+        xaxis=dict(gridcolor="#555", zerolinecolor="#666"),
+        yaxis=dict(gridcolor="#555", zerolinecolor="#666"),
+    )
+)
 
-def build_bode_fig(system, omega=None, title=None):
+
+def _left_title(text):
+    return dict(text=text, x=0, xanchor="left")
+
+
+def build_bode_fig(
+    system,
+    omega=None,
+    title=None,
+    freq_limits=None,
+    mag_limits=None,
+    phase_limits=None,
+    template="plotly_white",
+):
     """
     Build a Plotly Bode plot figure (magnitude + phase).
 
@@ -21,6 +44,14 @@ def build_bode_fig(system, omega=None, title=None):
         Frequency range in rad/s.
     title : str, optional
         Plot title.
+    freq_limits : tuple, optional
+        Frequency axis view limits as (min, max) in rad/s.
+    mag_limits : tuple, optional
+        Magnitude axis view limits as (min, max) in dB.
+    phase_limits : tuple, optional
+        Phase axis view limits as (min, max) in degrees.
+    template : str or plotly.graph_objects.layout.Template, optional
+        Plotly layout template name or template object.
 
     Returns
     -------
@@ -64,15 +95,17 @@ def build_bode_fig(system, omega=None, title=None):
         col=1,
     )
 
+    fig.update_xaxes(type="log", row=1, col=1)
     fig.update_xaxes(type="log", title_text="Frequency (rad/s)", row=2, col=1)
     fig.update_yaxes(title_text="Magnitude (dB)", row=1, col=1)
     fig.update_yaxes(title_text="Phase (deg)", row=2, col=1)
 
     fig.update_layout(
-        title=title or "Bode Plot",
+        title=_left_title(title or "Bode Plot"),
         showlegend=False,
         height=600,
         margin=dict(l=60, r=30, t=60, b=50),
+        template=template,
     )
 
     fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor="lightgray", row=1, col=1)
@@ -80,11 +113,30 @@ def build_bode_fig(system, omega=None, title=None):
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor="lightgray", row=1, col=1)
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor="lightgray", row=2, col=1)
 
+    fig.update_yaxes(autorange=True, row=1, col=1)
+    fig.update_yaxes(autorange=True, row=2, col=1)
+
+    if freq_limits:
+        log_range = [np.log10(freq_limits[0]), np.log10(freq_limits[1])]
+        fig.update_xaxes(range=log_range, row=2, col=1)
+    if mag_limits:
+        fig.update_yaxes(range=list(mag_limits), autorange=False, row=1, col=1)
+    if phase_limits:
+        fig.update_yaxes(range=list(phase_limits), autorange=False, row=2, col=1)
+
     return fig
 
 
 def build_nyquist_fig(
-    system, omega=None, title=None, unit_circle=True, arrows=True
+    system,
+    omega=None,
+    title=None,
+    unit_circle=True,
+    critical_point=True,
+    arrows=True,
+    x_limits=None,
+    y_limits=None,
+    template="plotly_white",
 ):
     """
     Build a Plotly Nyquist plot figure.
@@ -99,8 +151,16 @@ def build_nyquist_fig(
         Plot title.
     unit_circle : bool, optional
         Draw the unit circle. Default is True.
+    critical_point : bool, optional
+        Mark the critical point at (-1, 0). Default is True.
     arrows : bool, optional
         Show direction arrow. Default is True.
+    x_limits : tuple, optional
+        Real axis view limits as (min, max).
+    y_limits : tuple, optional
+        Imaginary axis view limits as (min, max).
+    template : str or plotly.graph_objects.layout.Template, optional
+        Plotly layout template name or template object.
 
     Returns
     -------
@@ -154,15 +214,16 @@ def build_nyquist_fig(
             )
         )
 
-    fig.add_trace(
-        go.Scatter(
-            x=[-1],
-            y=[0],
-            mode="markers",
-            name="Critical point (-1, 0)",
-            marker=dict(color="red", size=12, symbol="x"),
+    if critical_point:
+        fig.add_trace(
+            go.Scatter(
+                x=[-1],
+                y=[0],
+                mode="markers",
+                name="Critical point (-1, 0)",
+                marker=dict(color="red", size=12, symbol="x"),
+            )
         )
-    )
 
     annotations = []
     if arrows and len(real_part) > 2:
@@ -191,13 +252,14 @@ def build_nyquist_fig(
             )
 
     fig.update_layout(
-        title=title or "Nyquist Plot",
+        title=_left_title(title or "Nyquist Plot"),
         xaxis_title="Real",
         yaxis_title="Imaginary",
         height=500,
         margin=dict(l=60, r=30, t=60, b=50),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         annotations=annotations,
+        template=template,
     )
 
     fig.update_xaxes(
@@ -218,5 +280,10 @@ def build_nyquist_fig(
         zerolinewidth=1,
         zerolinecolor="black",
     )
+
+    if x_limits:
+        fig.update_xaxes(range=list(x_limits))
+    if y_limits:
+        fig.update_yaxes(range=list(y_limits))
 
     return fig
