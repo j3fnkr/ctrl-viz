@@ -12,12 +12,14 @@ from dash import Input, Output, State, dcc, html, no_update
 from ctrl_viz.parse import parse_transfer_function
 from ctrl_viz.web.plots import SOFT_DARK_TEMPLATE, build_bode_fig, build_nyquist_fig
 
+
 def _assets_path() -> Path:
-    """Dash assets folder (packaged or repo root in editable dev installs)."""
-    packaged = Path(__file__).resolve().parent / "assets"
-    if packaged.is_dir():
-        return packaged
-    return Path(__file__).resolve().parents[3] / "assets"
+    """Resolve Dash assets folder next to app.py (standard Dash layout)."""
+    web_dir = Path(__file__).resolve().parent
+    packaged = web_dir / "assets"
+    if not packaged.is_dir():
+        raise FileNotFoundError("assets dir could not be found")
+    return packaged
 
 
 ASSETS_PATH = _assets_path()
@@ -142,7 +144,9 @@ def _build_calc_state(
     }
 
 
-def _run_calc_from_state(calc_state, theme_data=None, unit_circle=None, critical_point=None):
+def _run_calc_from_state(
+    calc_state, theme_data=None, unit_circle=None, critical_point=None
+):
     dark_mode = (
         (theme_data or {}).get("dark", False)
         if theme_data is not None
@@ -159,7 +163,11 @@ def _run_calc_from_state(calc_state, theme_data=None, unit_circle=None, critical
         calc_state["nyquist_y_min"],
         calc_state["nyquist_y_max"],
         unit_circle if unit_circle is not None else calc_state["nyquist_unit_circle"],
-        critical_point if critical_point is not None else calc_state["nyquist_critical_point"],
+        (
+            critical_point
+            if critical_point is not None
+            else calc_state["nyquist_critical_point"]
+        ),
         calc_state["bode_omega_min"],
         calc_state["bode_omega_max"],
         calc_state["bode_freq_min"],
@@ -261,7 +269,9 @@ def handle_calculate(
         n_y_max = _parse_float(nyquist_y_max, NYQUIST_Y_MAX_DEFAULT)
 
         for error in (
-            _validate_range(n_omega_min, n_omega_max, "Nyquist frequency sweep", positive=True),
+            _validate_range(
+                n_omega_min, n_omega_max, "Nyquist frequency sweep", positive=True
+            ),
             _validate_range(n_x_min, n_x_max, "Nyquist real axis"),
             _validate_range(n_y_min, n_y_max, "Nyquist imaginary axis"),
         ):
@@ -288,8 +298,12 @@ def handle_calculate(
         b_freq_max = _parse_float(bode_freq_max, BODE_FREQ_MAX_DEFAULT)
 
         for error in (
-            _validate_range(b_omega_min, b_omega_max, "Bode frequency sweep", positive=True),
-            _validate_range(b_freq_min, b_freq_max, "Bode frequency view", positive=True),
+            _validate_range(
+                b_omega_min, b_omega_max, "Bode frequency sweep", positive=True
+            ),
+            _validate_range(
+                b_freq_min, b_freq_max, "Bode frequency view", positive=True
+            ),
         ):
             if error:
                 return empty, empty, True, error, {"display": "block"}
@@ -373,7 +387,9 @@ def create_navbar():
                     [
                         dbc.NavLink("Plot", href="/", active="exact"),
                         dbc.NavLink("About", href="/about", active="exact"),
-                        dbc.NavLink("Data Privacy", href="/data-privacy", active="exact"),
+                        dbc.NavLink(
+                            "Data Privacy", href="/data-privacy", active="exact"
+                        ),
                     ],
                     navbar=True,
                     className="ms-3",
@@ -934,30 +950,14 @@ def data_privacy_layout():
                 ],
             ),
             _privacy_section(
-                "Server log files",
-                [
-                    html.P(
-                        "If this application is operated on a publicly reachable "
-                        "web server, the server or hosting provider typically "
-                        "records access data in log files (for example IP "
-                        "address, date and time of access, requested URL, browser "
-                        "type). This processing is necessary to ensure "
-                        "operation and security of the service."
-                    ),
-                    html.P(
-                        "The exact retention period and recipient depend on your "
-                        "hosting setup and must be stated by the operator of "
-                        "the live deployment."
-                    ),
-                ],
-            ),
-            _privacy_section(
                 "Contact by e-mail",
                 [
                     html.P(
                         [
                             "If you contact us at ",
-                            html.A("control@fenker.eu", href="mailto:control@fenker.eu"),
+                            html.A(
+                                "control@fenker.eu", href="mailto:control@fenker.eu"
+                            ),
                             ", we process the personal data you provide (at "
                             "minimum your e-mail address and message content) "
                             "solely to handle your enquiry.",
@@ -968,9 +968,7 @@ def data_privacy_layout():
             _privacy_section(
                 "Legal bases",
                 [
-                    html.P(
-                        "Depending on the situation, processing is based on:"
-                    ),
+                    html.P("Depending on the situation, processing is based on:"),
                     html.Ul(
                         [
                             html.Li(
@@ -1003,62 +1001,9 @@ def data_privacy_layout():
                     ),
                 ],
             ),
-            _privacy_section(
-                "Your rights",
-                [
-                    html.P("Under the GDPR, you have the right to:"),
-                    html.Ul(
-                        [
-                            html.Li(
-                                "request access to your personal data (Art. 15)"
-                            ),
-                            html.Li(
-                                "request rectification of inaccurate data (Art. 16)"
-                            ),
-                            html.Li(
-                                "request erasure, where applicable (Art. 17)"
-                            ),
-                            html.Li(
-                                "request restriction of processing (Art. 18)"
-                            ),
-                            html.Li(
-                                "data portability, where applicable (Art. 20)"
-                            ),
-                            html.Li(
-                                "object to processing based on legitimate "
-                                "interests (Art. 21)"
-                            ),
-                            html.Li(
-                                "withdraw consent at any time, without affecting "
-                                "lawfulness of prior processing (Art. 7(3))"
-                            ),
-                            html.Li(
-                                "lodge a complaint with a supervisory authority "
-                                "(Art. 77), typically in your country of "
-                                "residence or work."
-                            ),
-                        ],
-                        className="mb-3",
-                    ),
-                    html.P(
-                        [
-                            "To exercise these rights, contact ",
-                            html.A("control@fenker.eu", href="mailto:control@fenker.eu"),
-                            ".",
-                        ]
-                    ),
-                ],
-            ),
             html.P(
                 "Last updated: July 2026.",
                 className="text-muted mt-4",
-            ),
-            html.P(
-                "This notice is provided for transparency and does not replace "
-                "individual legal advice. Operators of public deployments should "
-                "review it against their hosting environment and national "
-                "requirements (for example an imprint page).",
-                className="text-muted small",
             ),
         ],
         fluid=True,
