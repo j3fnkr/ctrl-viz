@@ -1,6 +1,5 @@
 
 services:
-  services:
   ctrl-viz-dash:
       build: .
       container_name: controlviz

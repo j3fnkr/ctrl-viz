@@ -27,4 +27,4 @@ USER ubuntu
 # (172.16.0.0/12 covers default Docker bridge networks; restrict further if you prefer)
 #
 # Do not expose port 8050 publicly when Caddy terminates TLS in front.
-CMD ["gunicorn", "ctrl_viz.web.wsgi:server", "--bind", "0.0.0.0:8050", "--workers", "2", "--timeout", "120", "--proxy-headers", "--forwarded-allow-ips=172.16.0.0/12"]
+CMD ["gunicorn", "ctrl_viz.web.wsgi:server", "--bind", "0.0.0.0:8050", "--workers", "2", "--timeout", "120", "--forwarded-allow-ips=172.16.0.0/12"]
