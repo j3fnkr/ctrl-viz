@@ -1,0 +1,36 @@
+
+services:
+  services:
+  ctrl-viz-dash:
+      build: .
+      container_name: controlviz
+      restart: unless-stopped
+      networks: 
+        - proxy
+  caddy:
+    image: caddy:2.10
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ${PWD}/conf:/etc/caddy:ro
+    tmpfs:
+      - /tmp
+    depends_on:
+      - ctrl-viz-dash
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    networks:
+      - proxy
+    read_only: true
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
+
+networks:
+  proxy:

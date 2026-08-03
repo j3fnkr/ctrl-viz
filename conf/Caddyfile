@@ -1,0 +1,9 @@
+
+{
+  email me@example.com
+}
+
+www.example.com {
+   reverse_proxy ctrl-viz-dash:8050
+   encode gzip
+}
